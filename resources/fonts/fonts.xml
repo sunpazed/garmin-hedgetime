@@ -1,0 +1,4 @@
+<fonts>
+  <font id="chomp" filename="chomp.fnt" antialias="true"/>
+  <font id="chomp_solid" filename="chomp-solid.fnt" antialias="true"/>
+</fonts>
