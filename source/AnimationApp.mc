@@ -9,7 +9,7 @@ class AnimationApp extends Application.AppBase {
     }
 
     function onSettingsChanged() {
-      Ui.requestUpdate();
+      WatchUi.requestUpdate();
     }
 
     //! onStart() is called on application start up
