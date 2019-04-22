@@ -1,16 +1,26 @@
 using Toybox.WatchUi;
 using Toybox.System;
 using Toybox.Graphics as Gfx;
+using Toybox.Math;
 
 // globals to manage state between classes
 var homer_done = false;
 var animation = null;
+
+// global to manage fonts
+var f_time = null;
+var f_timebg = null;
 
 // here's the animation delegate used to manage any animation events
 var delegate = null;
 
 class AnimationView extends WatchUi.WatchFace {
 
+    // variables for time layout
+    var dw;
+    var dh;
+    const font_height = 66;
+    const vert_offset = 6;
 
     function initialize() {
         WatchUi.WatchFace.initialize();
@@ -32,6 +42,7 @@ class AnimationView extends WatchUi.WatchFace {
     // but let's first check if the animation exists, if not load it.
     function doAnimation() {
       if( animation == null ) {
+          killFonts();
           loadAnimation();
       }
       play();
@@ -45,7 +56,12 @@ class AnimationView extends WatchUi.WatchFace {
     // we release any animaton resources onHide
     function onHide() {
         killAnimations();
-        // animation = null;
+        killFonts();
+    }
+
+    function onLayout(dc) {
+        dw = dc.getWidth();
+        dh = dc.getHeight();
     }
 
     // invoked when our animation is complete, or when sleep is triggered
@@ -57,24 +73,40 @@ class AnimationView extends WatchUi.WatchFace {
           // we nuke the animation to free up enough memory
           // to load and render the background and time
           killAnimations();
+          loadFonts();
 
           // here's where we load in the background,
           // which is the final frame of the animation
           var b_shrub = WatchUi.loadResource(Rez.Drawables.shrub);
           dc.drawBitmap(0,0,b_shrub);
 
-          // load the fonts for the time
-          var f_time = WatchUi.loadResource(Rez.Fonts.chomp);
-          var f_timebg = WatchUi.loadResource(Rez.Fonts.chomp_solid);
-
           // render the time
           var s_time = fetchTime();
+          var time_width = dc.getTextWidthInPixels(s_time, f_timebg);
 
-          dc.setColor(0xffffff, Gfx.COLOR_TRANSPARENT);
-          dc.drawText(120,80,f_timebg,s_time,Gfx.TEXT_JUSTIFY_CENTER);
+          // figure out time extents
+          var total_digits = s_time.length();
+          var total_height = ((total_digits-1)*vert_offset)+font_height;
 
-          dc.setColor(0x000000, Gfx.COLOR_TRANSPARENT);
-          dc.drawText(120,80,f_time,s_time,Gfx.TEXT_JUSTIFY_CENTER);
+          // time x,y position
+          var x_pos_time = (dw-time_width)/2;
+          var y_pos_time = (dh-total_height)/2;
+          var y_pos_start = y_pos_time+((total_digits-1)*vert_offset);
+
+          // let's render the time, one digit at a time
+          for (var next_digit = 0; next_digit<total_digits; next_digit++) {
+
+            var current_numeral = s_time.substring(next_digit,next_digit+1);
+
+            // render the background and foreground digits
+            dc.setColor(0xffffff, Gfx.COLOR_TRANSPARENT);
+            dc.drawText(x_pos_time, y_pos_start-(next_digit*vert_offset), f_timebg, current_numeral, Gfx.TEXT_JUSTIFY_LEFT);
+            dc.setColor(0x000000, Gfx.COLOR_TRANSPARENT);
+            dc.drawText(x_pos_time, y_pos_start-(next_digit*vert_offset), f_time, current_numeral, Gfx.TEXT_JUSTIFY_LEFT);
+
+            x_pos_time = x_pos_time + dc.getTextWidthInPixels(current_numeral, f_timebg);
+
+          }
 
 
         }
@@ -130,6 +162,19 @@ class AnimationView extends WatchUi.WatchFace {
     function killAnimations() {
       clearAnimations();
       animation = null;
+    }
+
+    // load the fonts for the time
+    function loadFonts() {
+      if (f_time == null && f_timebg == null) {
+        f_time = WatchUi.loadResource(Rez.Fonts.chomp);
+        f_timebg = WatchUi.loadResource(Rez.Fonts.chomp_solid);
+      }
+    }
+
+    function killFonts() {
+      f_time = null;
+      f_timebg = null;
     }
 
     // The user has just looked at their watch.
