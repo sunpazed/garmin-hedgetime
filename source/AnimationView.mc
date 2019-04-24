@@ -9,6 +9,7 @@ var animation = null;
 
 // global to manage fonts
 var f_time = null;
+var f_timesh = null;
 var f_timebg = null;
 
 // here's the animation delegate used to manage any animation events
@@ -20,7 +21,7 @@ class AnimationView extends WatchUi.WatchFace {
     var dw;
     var dh;
     const font_height = 66;
-    const vert_offset = 6;
+    const vert_offset = 5;
 
     function initialize() {
         WatchUi.WatchFace.initialize();
@@ -103,6 +104,8 @@ class AnimationView extends WatchUi.WatchFace {
             dc.drawText(x_pos_time, y_pos_start-(next_digit*vert_offset), f_timebg, current_numeral, Gfx.TEXT_JUSTIFY_LEFT);
             dc.setColor(0x000000, Gfx.COLOR_TRANSPARENT);
             dc.drawText(x_pos_time, y_pos_start-(next_digit*vert_offset), f_time, current_numeral, Gfx.TEXT_JUSTIFY_LEFT);
+            dc.setColor(0x005500, Gfx.COLOR_TRANSPARENT);
+            dc.drawText(x_pos_time, y_pos_start-(next_digit*vert_offset), f_timesh, current_numeral, Gfx.TEXT_JUSTIFY_LEFT);
 
             x_pos_time = x_pos_time + dc.getTextWidthInPixels(current_numeral, f_timebg);
 
@@ -167,7 +170,8 @@ class AnimationView extends WatchUi.WatchFace {
     // load the fonts for the time
     function loadFonts() {
       if (f_time == null && f_timebg == null) {
-        f_time = WatchUi.loadResource(Rez.Fonts.chomp);
+        f_time   = WatchUi.loadResource(Rez.Fonts.chomp_outline);
+        f_timesh = WatchUi.loadResource(Rez.Fonts.chomp_shrub);
         f_timebg = WatchUi.loadResource(Rez.Fonts.chomp_solid);
       }
     }

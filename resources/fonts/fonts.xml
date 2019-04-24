@@ -1,4 +1,6 @@
 <fonts>
   <font id="chomp" filename="chomp.fnt" antialias="true"/>
+  <font id="chomp_shrub" filename="chomp-shrub.fnt" antialias="true"/>
+  <font id="chomp_outline" filename="chomp-outline.fnt" antialias="true"/>
   <font id="chomp_solid" filename="chomp-solid.fnt" antialias="true"/>
 </fonts>
